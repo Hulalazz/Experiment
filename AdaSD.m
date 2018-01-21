@@ -1,4 +1,4 @@
-function SDforHilb2(n,tol)
+function AdaSD(n,tol)
 %The cost function is (1/2)x'*H*x+b'*x
 %n is the size of H
 %tol is the tolerence of iteration
@@ -19,6 +19,3 @@ while (stopc>tol)                                               %% Beginning of 
 end   % end of an iteration
 
 fprintf( 'k=%4d  epsm=%9.3e  \n',k,stopc);
-
-
-

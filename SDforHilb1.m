@@ -1,4 +1,4 @@
-function SD(n,tol)
+function SDforHilb1(n,tol)
 %The cost function is (1/2)x'*H*x+b'*x
 %n is the size of H
 %tol is the tolerence of iteration

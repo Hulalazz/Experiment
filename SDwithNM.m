@@ -1,4 +1,4 @@
-function SDforHilb2(n,tol)
+function SDwithNM(n,tol)
 %The cost function is (1/2)x'*H*x+b'*x
 %n is the size of H
 %tol is the tolerence of iteration
@@ -7,18 +7,20 @@ function SDforHilb2(n,tol)
   c=-H*xopt;
   x=c; stopc=1;k=0;%%The initial iteration
   x1=c;
+  v=zeros(n,1);
+  alpha=0.2; gamma=0.8;%convex combination of historyb gradient and current gradient
+ 
 while (stopc>tol)                                               %% Beginning of an iteration
     
     if mod(k,1000)==0 fprintf('The number of ieration :%4d epsm=%9.3e\n', k, stopc);end;
     
     x0=x;k=k+1;  % the initial value
-    step = ((H*x0+c)'*(H*x0+c))/((H*x0+c)'*(H*(H*x0+c)));  %The step of stepest descent
-    xt = x0 - 0.8*step*(H*x0+c);%reduced step
+    v0=v;
+    x_t = x0 - alpha*v0;
+    vt = gamma*v0 + (H*(x_t)+c);  %The momentum                  
+    xt = x0 - alpha*vt;                       %reduced step
     stopc = norm(H*xt+c)/norm(H*x1+c);
     x=xt;
-end   % end of an iteration
-
+    v=vt;
+end                                     % end of an iteration
 fprintf( 'k=%4d  epsm=%9.3e  \n',k,stopc);
-
-
-

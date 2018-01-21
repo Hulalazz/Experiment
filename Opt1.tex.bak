@@ -1,0 +1,299 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+% Write algorithm
+\usepackage{algorithm}
+%format of the algorithm
+\usepackage{algorithmic}
+%format of the algorithm
+\usepackage{multirow}
+%multirow for format of table
+\usepackage{amsmath}
+\usepackage{xcolor}
+
+\DeclareMathOperator*{\argmin}{argmin}
+\renewcommand{\algorithmicrequire}{\textbf{Initialize:}}
+%/Use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+%\usepackage{algpseudocode}
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+\title{Optimization in Deep Learning}
+\author{Zhang Jinxiong}
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed
+
+\begin{document}
+\maketitle
+\section{Abstraction}
+Stochastic gradient descent is to optimize the finite sum objective functions based on gradient descent.
+Stochastic gradient descent (abbreviated SGD) is the popular optimization algorithm in deep learning.
+It is easy to implement and of much advantages in differentiable optimization within high dimension.
+\section{Introduction}
+
+Gradient descent or steepest descent is the fundamental first order optimization only using the gradient of the object function.
+ It is simple and especially efficient in convex optimization problem.
+But when the dimension of the objective function is too high, it is not easy to compute its gradient owing to the dimension curse.
+To void that, we just grasp some ``local" or ``partial" information in the low dimension subspace instead of the full information in high dimension space.
+
+For example, the coordinate descent algorithm is to optimize the multi-variable function in one specific variable or coordinate while the rest are fixed.
+
+It is natural for us to take the advantage of ``partial" gradient information in place of the full gradient information with affordable computation cost.
+
+
+\section{Determinant Gradient Method}
+The stochastic gradient descent is rooted in classical or determinant method
+\subsection{Gradient Descent}
+Gradient descent is based on the local information -  it is  the negative gradient that is most speedy to decrease for a function in a given point.
+Let $f(x)$ be the objective function and $\nabla f(x) = g(x)$.
+\begin{algorithm}[htb]
+\caption{Gradient Descent}
+%算法的标题
+\label{GD}
+%给算法一个标签，这样方便在文中对算法的引用
+Give the initial value: $x_0$;
+
+Update the parameters with small step: $$x_{k+1}=x_{k} - \alpha g(x_{k}).$$
+
+\end{algorithm}
+
+Note: $\alpha$ must be small enough to ensure that it is descent: $f(x_{k+1})< f(x_{k})$.
+
+The step is key factor in the convergence proof of the gradient descent.
+One common setting is diminishing but not summable: $$\sum_{k=0}^{\infty} {\alpha}_{k}= \infty,\sum_{k=0}^{\infty} {\alpha}_{k}^{2}< \infty. $$
+\section{Stochastic Gradient Descent}
+
+Stochastic means that this method is not to compute the exact gradient but to estimate the gradient by sampling.
+It is always applied to the optimization in the finite sum form. For example, it is to solve the mean square error of least square method in large scale.
+
+The object function is called empirical risk function with the
+form $f(x_i;\theta)=\sum_{i=1}^{n}f_{i}(\theta)$, where $x_i$ is constant given by training sample and $f_{i}$have the same independent variables $\theta$. Let $\nabla f_{i}(x) = g_{i}(x)$. The stochastic gradient descent with constant step is shown below.
+\begin{algorithm}[htb]
+\caption{Primary Stochastic Gradient Descent}
+%算法的标题
+\label{SGD}
+%给算法一个标签，这样方便在文中对算法的引用H
+\begin{enumerate}
+  \item Give the initial value: $x_0$;
+  \item Randomly choose term index $k_{i}$ in the $k$th iteration from ${1,2,\cdots, n}$;
+  \item Update the parameters: $${\theta}_{k+1}={\theta}_{k} - \alpha g_{k_{i}}({\theta}_{k}).$$
+\end{enumerate}
+\end{algorithm}
+
+Note the difference with gradient descent: the index $k_{i}$ is a random variable!
+We can randomly choose a minibatch of training set to compute the gradient instead of the single sample:
+${\theta}_{k+1}={\theta}_{k} - \alpha \frac{1}{m}\sum_{i=1}^{m}g_{k_{i}}({\theta}_{k})$.
+
+%[See also at Wikipedia.](https://www.wikiwand.com/en/Stochastic_gradient_descent) and [SGD in CS231](https://cs231n.github.io/neural-networks-3/#sgd).
+
+\subsection{Adaptive Learning Rate}
+
+There are some strategies of choosing the step sizes.
+
+\subsubsection{Adagrad}
+It is based on the experience that infrequent parameters can give more information than the frequent parameters.
+Thus it is designed to perform larger updates for infrequent and smaller updates for frequent parameters.
+
+It individually adapts the learning rates of all model parameters by scaling them inversely proportional to the square root of the sum of all the historical squared values of the gradient.
+\begin{algorithm}[htb]
+\caption{Adagrad Algorithm}
+%算法的标题
+\label{Adagrad}
+%给算法一个标签，这样方便在文中对算法的引用
+
+  \begin{enumerate}
+  \item Sample a minibatch of m examples from the training set $\{x_{k_1}, x_{k_2}, \dots, x_{k_m}\}$ with corresponding targets $y_{k_i}$;
+  \item Compute the gradient:$g_{k} = \frac{1}{m}\sum_{i=1}^{m}g_{k_{i}}({\theta})$;
+  \item Accumulate squared gradient: $r_{k+1}= r_k+ g_{k+1}\odot g_{k+1}$, where $\odot$ is multiplication applied element-wise;
+  \item Update: ${\theta}_{k+1}={\theta}_k - \frac{\varepsilon}{\delta + \sqrt{r_{k+1}}}\odot g_k$ (Division and square root applied element-wise).
+\end{enumerate}
+\end{algorithm}
+
+\subsubsection{RMSprop}
+
+RMSProp uses an \textbf{exponentially decaying average}to discard history from the extreme past.
+\begin{algorithm}[htb]
+\caption{RMSprop Algorithm}
+%算法的标题
+\label{RMSprop}
+%给算法一个标签，这样方便在文中对算法的引用
+  \begin{enumerate}
+  \item Sample a minibatch of m examples from the training set $\{x_{k_1}, x_{k_2}, \dots, x_{k_m}\}$ with corresponding targets $y_{k_i}$;
+  \item Compute the gradient:$g_{k} = \frac{1}{m}\sum_{i=1}^{m}g_{k_{i}}({\theta})$;
+  \item Accumulate squared gradient: $r_{k+1}= \rho r_k+(1-\rho)g_{k+1}\odot g_{k+1}$, where $\odot$ is multiplication applied element-wise;
+  \item Update: ${\theta}_{k+1}={\theta}_k - \frac{\varepsilon}{\delta + \sqrt{r_{k+1}}}\odot g_k$ (Division and square root applied element-wise).
+\end{enumerate}
+
+\end{algorithm}
+
+\subsubsection{Adam}
+Adaptive Moment Estimation (Adam) is another method that computes adaptive learning rates for each parameter.
+It can be seen as a variant on the combination of RMSProp and momentum.
+
+\begin{algorithm}
+\caption{Adam}
+\label{Adam}
+ Sample a minibatch of m examples from the training set $\{x_{k_1}, x_{k_2}, \dots, x_{k_m}\}$ with corresponding targets $y_{k_i}$;
+
+ Compute the gradient:$g_{k} = \frac{1}{m}\sum_{i=1}^{m}g_{k_{i}}({\theta})$;
+
+ Update biased first moment estimate: $s_{k+1}={\rho}_1 s_k + (1-{\rho}_1)g_k$;
+
+ Update biased second moment estimate: $r_{k+1}={\rho}_2 r_k + (1-{\rho}_2)g_k\odot g_k$;
+
+ Correct bias in first moment: $\hat s_{k+1}=\frac{s_{k+1}}{1-{\rho}_{1}^k}$;
+
+ Correct bias in second moment: $\hat r_{k+1}=\frac{r_{k+1}}{1-{\rho}_{2}^k}$;
+
+ Update: ${\theta}_{k+1}={\theta}_k -\varepsilon \frac{\hat s_{k+1}}{\sqrt{\hat r_{k+1}}+\delta}$ .
+%\end{algorithmic}
+\end{algorithm}
+
+\subsection{Variance Reduction}
+The stochastic gradient descnet is not always descent due to its inherent variance.
+
+\subsubsection{Stochastic Average Gradient}
+Like stochastic gradient (SG) methods, the SAG method’s iteration cost is independent of the number of terms in the sum.
+However, by incorporating a memory of previous gradient values the SAG method achieves a faster convergence rate than black-box SG methods.
+
+
+The SAG iterations take the form:
+$${\theta}_{k+1}={\theta}_k - \frac{{\alpha}_k }{n}\sum _{i=1}^{n}y_{i_k} ,$$
+where at each iteration a random index $i_k$ is selected and we set:
+$$y_{i_k}=
+\begin{cases}
+g_{i}({\theta}_k),  & \text{if $i=i_k$}; \\
+y_{i_{k-1}}, & \text{otherwise}.
+\end{cases}$$
+
+\subsection{SVRG}%\href{}{http://riejohnson.com/rie/stograd_nips.pdf}
+Rie Johnson and Tong Zhang introduced an explicit variance reduction method for stochastic gradient descent.
+It is proved that this method enjoys the same fast convergence rate as those of stochastic dual coordinate ascent (SDCA) and Stochastic Average Gradient (SAG) for \emph{smooth and strongly convex} functions.
+%\begin{algorithm}[t]
+%\caption{SVRG}
+%\label{SVRG}
+%\textbf{Input:} $\hat{\theta}={\hat{\theta}}_{s-1}$, $\hat{\mu}=\frac{1}{n}\sum_{i=1}^{m} g_i (\hat{\theta})$,${\theta}_0=\hat{\theta}$;
+%
+%  For $k\in \{ 1, 2, \cdots, m\}$;
+%
+%  Randomly pick $i_k \in \{1,2,\cdots, n\}$ and update weight: $${\theta}_k={\theta}_{k-1}-\alpha(g_{i_k}({\theta}_{k-1})-g_{i_k}(\hat{\theta})+\hat{\mu}).$$
+%
+% ${\hat{\theta}}_{s}={\theta}_m$ or ${\hat{\theta}}_{s}= {\theta}_k $ for randomly chosen $k \in \{1,2,\cdots, m-1\} $
+%\end{algorithm}
+
+\begin{algorithm}[t]
+\caption{SVRG}
+\textbf{Parameters:}s update frequency m and learning rate $\alpha$.\\
+\textbf{Initialize:}$\tilde{\theta}$\\
+%\begin{algorithmic}[1]
+%\textbf{Output:} $X^*$. \\
+\textbf{Iterate} for $s = 1,2,\cdots $
+    $\tilde{\theta}={\tilde{\theta}_{s-1}}$\\
+    $\tilde{\mu}=\frac{1}{n}\sum_{i=1}^{n} g_i $\\
+    ${\theta}_{0}=\tilde{\theta} $\\
+    \textbf{Iterate} Randomly pick $i_k \in \{1,2,\cdots, m\}$ and update weight: $${\theta}_k={\theta}_{k-1}-\alpha(g_{i_k}({\theta}_{k-1})-g_{i_k}(\tilde{\theta})+\tilde{\mu}).$$
+  end\\
+ \textbf{Option I:} set ${\tilde{\theta}}_{s-1}={\theta}_m$\\
+ \textbf{Option II:}set  ${\tilde{\theta}}_{s-1}={\theta}_t$ for randomly chosen $t\in\{1,2,\cdots,m-1\}$
+
+%\end{algorithmic}
+\end{algorithm}
+\subsection{SVRG++}
+It is improved SVRG for non-strongly convex or sum-of-non-convex settings.%(https://arxiv.org/abs/1506.01972).
+The objective function is $$F(x)=\sum _{i=1}^{n}f_{i}(x)+h(x),$$where $h(x)$ is the regularization term.
+Let $g_i(x)={\nabla}_{x} f_i(x)$.
+
+\begin{algorithm} %算法开始
+\caption{SVRG++} %算法的题目
+\label{SVRG++} %算法的标签
+%\begin{algorithmic}[1] %此处的[1]控制一下算法中的每句前面都有标号
+%\REQUIRE Text:${\tilde{x}}^0=x^{\phi},x_0^1=x^{\phi}$%输入条件(此处的REQUIRE默认关键字为Require，在上面已自定义为Input)
+%% for loop
+%\FOR{$s=1$ to $S$}
+%\STATE ${\tilde{\mu}}_{s-1}=\sum _{i=1}^{n}g_i({\tilde{x}}^{s-1})$ \\
+%       $m_s=2^sm_0$
+%       \FOR {$t$ in $\{ 0,1, 2, \cdots, m_s -1\}$}
+%       \STATE   Randomly pick $i_k \in \{1,2,\cdots, n\}$.\\
+%        $$ \hat{w}=g_{i_k}({x}_{k}^s)-g_{i_k}(\hat{x}_{s-1})+\hat{\mu}_s$$,
+%       $$x_{k+1}^s=argmin_{x}\{ h(x)+\frac{1}{2\gamma}\| x- x_k^s\|\}+<x,\hat{w}>\}$$
+%\ENDFOR
+%\FORALL{$i$ such that $0\leq i\leq 10$}
+%\STATE carry out some processing
+%\ENDFOR
+%% while-loop
+%\WHILE{some condition holds}
+%\STATE carry out some processing
+%\ENDWHILE
+%% repeat-until loop
+%\REPEAT
+%\STATE carry out some processing
+%\UNTIL{some condition is met}
+%% infinite loop
+%\LOOP
+%\STATE this processing will be repeated forever
+%\ENDLOOP
+%\end{algorithmic}
+1. During the $s$th epoch, $\hat{\mu}_{s-1}=\frac{1}{m_{s-1}}\sum_{i=1}^{m} g_i ({\hat{x}}_{s-1})$;\\
+2. $m_s=2^s m_{0}$\\
+3. For $k\in \{ 0,1, 2, \cdots, m_s -1\}$\\
+
+ Randomly pick $i_k \in \{1,2,\cdots, n\}$ and update weight:
+ $$ \hat{w}=g_{i_k}({x}_{k}^s)-g_{i_k}(\hat{x}_{s-1})+\hat{\mu}_s,$$
+ $$x_{k+1}^s=argmin_{x}\{ h(x)+\frac{1}{2\gamma}\| x- x_k^s\|+<x,\hat{w}>\}$$\\
+
+4. ${\hat x}_{s}=\frac{1}{m_s}\sum _{k=1}^{m_s}x_{k}^s$ ;\\
+5. $x_0 ^{s+1}=x_{m_s}^s$
+\end{algorithm}
+
+\end{document}

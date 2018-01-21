@@ -1,4 +1,4 @@
-function SDforHilb2(n,tol)
+function SD(n,tol)
 %The cost function is (1/2)x'*H*x+b'*x
 %n is the size of H
 %tol is the tolerence of iteration
@@ -13,7 +13,7 @@ while (stopc>tol)                                               %% Beginning of 
     
     x0=x;k=k+1;  % the initial value
     step = ((H*x0+c)'*(H*x0+c))/((H*x0+c)'*(H*(H*x0+c)));  %The step of stepest descent
-    xt = x0 - 0.8*step*(H*x0+c);%reduced step
+    xt = x0 - 1.2*step*(H*x0+c);%increasing step
     stopc = norm(H*xt+c)/norm(H*x1+c);
     x=xt;
 end   % end of an iteration
